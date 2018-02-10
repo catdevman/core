@@ -1,0 +1,36 @@
+version: '2'
+
+services:
+    web:
+        image: nginx:latest
+        ports:
+            - "80:80"
+            - "443:443"
+        volumes:
+            - ./ssl:/etc/ssl
+            - ./:/code
+            - ./site.conf:/etc/nginx/conf.d/default.conf
+        networks:
+            - gibbon-network
+    php:
+        image: php:gibbon
+        volumes:
+            - ./:/code
+            - ./php.ini:/usr/local/etc/php/conf.d/php.ini
+        networks:
+            - gibbon-network
+    database:
+        image: mysql:5.7
+        volumes:
+            - ./data:/var/lib/mysql
+        ports:
+            - "3306:3306"
+        environment:
+            - MYSQL_ROOT_PASSWORD=password
+        networks:
+            - gibbon-network
+
+
+networks:
+    gibbon-network:
+        driver: bridge
